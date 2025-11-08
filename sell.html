@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sell Item | Student Marketplace</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <h1 class="logo">🎓 Student Marketplace</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="listings.html">Browse Listings</a></li>
+          <li><a href="sell.html" class="active">Sell Item</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h2>List an Item for Sale</h2>
+    <p>Fill out the form below to post your listing.</p>
+  </section>
+
+  <section class="form-section">
+    <form class="sell-form">
+      <label>Item Name:</label>
+      <input type="text" placeholder="e.g. TI-84 Calculator" required>
+
+      <label>Description:</label>
+      <textarea rows="4" placeholder="Briefly describe the item"></textarea>
+
+      <label>Price ($):</label>
+      <input type="number" min="0" required>
+
+      <label>Upload Image:</label>
+      <input type="file" accept="image/*">
+
+      <button type="submit" class="btn">Post Listing</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Student Marketplace | Built for Students, by Students</p>
+  </footer>
+</body>
+</html>
