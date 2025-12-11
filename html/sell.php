@@ -13,34 +13,38 @@
       <nav>
         <ul>
           <li><a href="../index.html" class="active">Home</a></li>
-          <li><a href="listings.html">Browse Listings</a></li>
-          <li><a href="sell.html">Sell Item</a></li>
+          <li><a href="listings.php">Browse Listings</a></li>
+          <li><a href="sell.php">Sell Item</a></li>
           <li><a href="login.html">Login</a></li>
           <li><a href="register.html">Register</a></li>
         </ul>
       </nav>
     </div>
   </header>
+
   <section class="hero">
     <h2>List an Item for Sale</h2>
     <p>Fill out the form below to post your listing.</p>
   </section>
 
   <section class="form-section">
-    <form class="sell-form">
-      <label>Item Name:</label>
-      <input type="text" placeholder="e.g. TI-84 Calculator" required>
+    <!-- Upload-enabled form -->
+    <form class="sell-form" action="add_listing.php" method="POST" enctype="multipart/form-data">
 
-      <label>Description:</label>
-      <textarea rows="4" placeholder="Briefly describe the item"></textarea>
+      <label for="title">Item Name:</label>
+      <input type="text" id="title" name="title" required>
 
-      <label>Price ($):</label>
-      <input type="number" min="0" required>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
 
-      <label>Upload Image:</label>
-      <input type="file" accept="image/*">
+      <label for="price">Price ($):</label>
+      <input type="number" id="price" name="price" min="0" step="0.01" required>
+
+      <label for="image">Upload Image (optional):</label>
+      <input type="file" id="image" name="image" accept="image/*">
 
       <button type="submit" class="btn">Post Listing</button>
+
     </form>
   </section>
 
