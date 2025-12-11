@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +10,9 @@
   <title>Browse Listings | Student Marketplace</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
+
 <header>
   <div class="navbar">
     <h1 class="logo">🎓 Student Marketplace</h1>
@@ -19,7 +25,6 @@
 
         <?php if (isset($_SESSION['user_id'])): ?>
 
-          <!-- USER BADGE (icon + name) -->
           <li class="user-badge">
             <span class="user-icon">👤</span>
             <span class="user-name">
@@ -27,74 +32,109 @@
             </span>
           </li>
 
-          <!-- LOGOUT -->
           <li><a href="logout.php">Logout</a></li>
 
         <?php else: ?>
 
-          <!-- SHOWN ONLY WHEN LOGGED OUT -->
           <li><a href="login.php">Login</a></li>
           <li><a href="register.php">Register</a></li>
 
         <?php endif; ?>
       </ul>
     </nav>
-
   </div>
 </header>
 
+<section class="hero">
+  <h2>All Listings</h2>
+  <p>Explore items your classmates are selling on campus.</p>
+</section>
 
-  <section class="hero">
-    <h2>All Listings</h2>
-    <p>Explore items your classmates are selling on campus.</p>
-  </section>
+<section class="listing-grid">
+<?php
+  require_once "db_config.php";
 
-  <section class="listing-grid">
-    <?php
-      require_once "db_config.php";
+  $sql = "SELECT listing_id, title, description, price, img_path, date_posted
+          FROM listings
+          ORDER BY listing_id DESC";
 
-      // Get all listings, newest first
-      $sql = "SELECT listing_id, title, description, price, img_path, date_posted 
-              FROM listings
-              ORDER BY listing_id DESC";
+  $result = $conn->query($sql);
 
-      $result = $conn->query($sql);
+  if (!$result) {
+    echo "<p>Failed to load listings. Please try again later.</p>";
+  } elseif ($result->num_rows === 0) {
+    echo "<p class=\"empty-message\">No listings yet. Be the first to <a href=\"sell.php\">list an item</a>!</p>";
+  } else {
+    while ($row = $result->fetch_assoc()) {
+      $title       = htmlspecialchars($row['title'], ENT_QUOTES);
+      $description = htmlspecialchars($row['description'], ENT_QUOTES);
+      $price       = number_format((float)$row['price'], 2);
+      $date        = htmlspecialchars($row['date_posted']);
 
-      if (!$result) {
-        echo "<p>Failed to load listings. Please try again later.</p>";
-      } elseif ($result->num_rows === 0) {
-        echo "<p class=\"empty-message\">No listings yet. Be the first to <a href=\"sell.php\">list an item</a>!</p>";
+      if (!empty($row['img_path'])) {
+        $imgPath = '../' . ltrim($row['img_path'], '/');
       } else {
-        while ($row = $result->fetch_assoc()) {
-          $title       = htmlspecialchars($row['title']);
-          $description = htmlspecialchars($row['description']);
-          $price       = number_format((float)$row['price'], 2);
-          $date        = htmlspecialchars($row['date_posted']);
-
-          // Build image path:
-          // Assume img_path is like "img/laptop.png" or "img/desk.png"
-          if (!empty($row['img_path'])) {
-            $imgPath = '../' . ltrim($row['img_path'], '/');
-          } else {
-            // Fallback image
-            $imgPath = '../img/textbook.png';
-          }
-          $imgPathEscaped = htmlspecialchars($imgPath);
-
-          echo '<div class="listing">';
-          echo '  <img src="' . $imgPathEscaped . '" alt="' . $title . '">';
-          echo '  <h4>' . $title . '</h4>';
-          echo '  <p>$' . $price . ' · Posted ' . $date . '</p>';
-          echo '</div>';
-        }
+        $imgPath = '../img/textbook.png';
       }
+      $imgPathEscaped = htmlspecialchars($imgPath);
 
-      $conn->close();
-    ?>
-  </section>
+      echo '<div class="listing"
+              onclick="openModal(
+                \'' . $title . '\',
+                \'' . $description . '\',
+                \'' . $price . '\',
+                \'' . $imgPathEscaped . '\'
+              )">';
 
-  <footer>
-    <p>&copy; 2025 Student Marketplace | Built for Students, by Students</p>
-  </footer>
+      echo '  <img src="' . $imgPathEscaped . '" alt="' . $title . '">';
+      echo '  <h4>' . $title . '</h4>';
+      echo '  <p>$' . $price . ' · Posted ' . $date . '</p>';
+      echo '</div>';
+    }
+  }
+
+  $conn->close();
+?>
+</section>
+
+<!-- 🔹 MODAL (added) -->
+<div id="listingModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+
+    <img id="modalImage" alt="" class="modal-image">
+    <h2 id="modalTitle"></h2>
+    <p id="modalDescription"></p>
+    <p><strong>Price:</strong> $<span id="modalPrice"></span></p>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Student Marketplace | Built for Students, by Students</p>
+</footer>
+
+<!-- 🔹 MODAL SCRIPT (added) -->
+<script>
+function openModal(title, description, price, imgPath) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalDescription").textContent = description;
+  document.getElementById("modalPrice").textContent = price;
+  document.getElementById("modalImage").src = imgPath;
+
+  document.getElementById("listingModal").style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("listingModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+  const modal = document.getElementById("listingModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};
+</script>
+
 </body>
 </html>
