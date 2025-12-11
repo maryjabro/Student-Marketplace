@@ -1,15 +1,19 @@
 <?php
 // --- DATABASE SETTINGS (change if needed) ---
 $db_host = "localhost";
-$db_name = "student_marketplace";
-$db_user = "root";
-$db_pass = "password";
+$db_name = "studentMarketplace";
+$db_user = "phpuser";
+$db_pass = "phpuser1!";
 
 try {
-    $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass, [
+   $pdo = new PDO(
+    "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+    $db_user,
+    $db_pass,
+    [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-} catch (PDOException $e) {
+    ]
+);} catch (PDOException $e) {
     die("Database connection failed.");
 }
 
@@ -34,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (empty($errors)) {
         try {
-            // ⚠ This matches your table: user_id, name, email, password
+            // ? This matches your table: user_id, name, email, password
             $stmt = $pdo->prepare(
                 "INSERT INTO users (name, email, password)
                  VALUES (:name, :email, :password)"
@@ -163,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <body>
   <header>
     <div class="navbar">
-      <h1 class="logo">🎓 Student Marketplace</h1>
+      <h1 class="logo">?? Student Marketplace</h1>
       <nav>
         <ul>
           <li><a href="../index.html">Home</a></li>
