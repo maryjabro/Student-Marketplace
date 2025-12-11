@@ -1,3 +1,10 @@
+<?php
+require_once "html/db_config.php";
+
+// Fetch 3 most recent listings
+$sql = "SELECT title, price, img_path FROM listings ORDER BY listing_id DESC LIMIT 3";
+$result = $conn->query($sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +19,7 @@
       <h1 class="logo">🎓 Student Marketplace</h1>
       <nav>
         <ul>
-          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="index.php" class="active">Home</a></li>
           <li><a href="html/listings.php">Browse Listings</a></li>
           <li><a href="html/sell.php">Sell Item</a></li>
           <li><a href="html/login.php">Login</a></li>
@@ -25,7 +32,7 @@
   <section class="hero">
     <h2>Buy, Sell, and Trade with Fellow Students</h2>
     <p>Find affordable textbooks, electronics, dorm essentials, and more from your campus community.</p>
-    <a href="html/listings.html" class="btn">Start Browsing</a>
+    <a href="html/listings.php" class="btn">Start Browsing</a>
   </section>
 
   <section class="categories">
@@ -53,21 +60,25 @@
   <section class="featured">
     <h3>Featured Listings</h3>
     <div class="listing-grid">
-      <div class="listing">
-        <img src="img/laptop.png" alt="Laptop" />
-        <h4>MacBook Air 2020</h4>
-        <p>$450</p>
-      </div>
-      <div class="listing">
-        <img src="img/textbook.png" alt="Textbook" />
-        <h4>Calculus Textbook</h4>
-        <p>$25</p>
-      </div>
-      <div class="listing">
-        <img src="img/bike.png" alt="Bike" />
-        <h4>Used Mountain Bike</h4>
-        <p>$90</p>
-      </div>
+      <?php
+      if ($result && $result->num_rows > 0) {
+          while ($row = $result->fetch_assoc()) {
+              $title = htmlspecialchars($row['title']);
+              $price = number_format((float)$row['price'], 2);
+              $imgPath = !empty($row['img_path']) ? $row['img_path'] : 'img/textbook.png';
+              $imgPathEscaped = htmlspecialchars($imgPath);
+              ?>
+              <div class="listing">
+                <img src="<?php echo $imgPathEscaped; ?>" alt="<?php echo $title; ?>" />
+                <h4><?php echo $title; ?></h4>
+                <p>$<?php echo $price; ?></p>
+              </div>
+              <?php
+          }
+      } else {
+          echo '<p>No listings yet — be the first to post!</p>';
+      }
+      ?>
     </div>
   </section>
 
@@ -76,4 +87,3 @@
   </footer>
 </body>
 </html>
-
