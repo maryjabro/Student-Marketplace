@@ -56,7 +56,7 @@
       <label for="title">Item Name:</label>
       <input type="text" id="title" name="title" required>
 
-      <label for="description">Description:</label>
+      <label for="description">Description & Contact:</label>
       <textarea id="description" name="description" rows="4" required></textarea>
 
       <label for="price">Price ($):</label>
