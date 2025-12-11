@@ -276,7 +276,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <p class="auth-switch">
           Already have an account?
-          <a href="login.html">Log in</a>
+          <a href="login.php">Log in</a>
         </p>
       </form>
     </section>
