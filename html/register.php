@@ -1,4 +1,5 @@
 <?php
+// --- DATABASE SETTINGS (change if needed) ---
 $db_host = "localhost";
 $db_name = "student_marketplace";
 $db_user = "root";
@@ -15,62 +16,45 @@ try {
 $errors = [];
 $success = "";
 
-$fullName = "";
+$name = "";
 $email = "";
-$school = "";
-$major = "";
-$gradYear = "";
-$accountType = "buyer_seller";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $fullName = trim($_POST["fullName"] ?? "");
-    $email = trim($_POST["email"] ?? "");
-    $password = $_POST["password"] ?? "";
+    $name            = trim($_POST["name"] ?? "");
+    $email           = trim($_POST["email"] ?? "");
+    $password        = $_POST["password"] ?? "";
     $confirmPassword = $_POST["confirmPassword"] ?? "";
-    $school = trim($_POST["school"] ?? "");
-    $major = trim($_POST["major"] ?? "");
-    $gradYear = trim($_POST["gradYear"] ?? "");
-    $accountType = trim($_POST["accountType"] ?? "buyer_seller");
-    $terms = isset($_POST["terms"]);
+    $terms           = isset($_POST["terms"]);
 
-    if ($fullName === "") $errors[] = "Full name is required.";
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email required.";
+    if ($name === "") $errors[] = "Name is required.";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required.";
     if (strlen($password) < 6) $errors[] = "Password must be at least 6 characters.";
     if ($password !== $confirmPassword) $errors[] = "Passwords do not match.";
     if (!$terms) $errors[] = "You must agree to the terms.";
 
-    $gradYearValue = null;
-    if ($gradYear !== "") {
-        if (ctype_digit($gradYear)) {
-            $gradYearValue = (int)$gradYear;
-        } else {
-            $errors[] = "Graduation year must be a number.";
-        }
-    }
-
     if (empty($errors)) {
         try {
+            // ⚠ This matches your table: user_id, name, email, password
             $stmt = $pdo->prepare(
-                "INSERT INTO users (full_name, email, password_hash, school, major, grad_year, account_type)
-                 VALUES (:full_name, :email, :password_hash, :school, :major, :grad_year, :account_type)"
+                "INSERT INTO users (name, email, password)
+                 VALUES (:name, :email, :password)"
             );
 
+            // NOTE: Your column is varchar(30), so this stores plain text.
+            // For a real project, you should change the column to varchar(255)
+            // and use password_hash() instead.
             $stmt->execute([
-                ":full_name" => $fullName,
-                ":email" => $email,
-                ":password_hash" => password_hash($password, PASSWORD_DEFAULT),
-                ":school" => $school ?: null,
-                ":major" => $major ?: null,
-                ":grad_year" => $gradYearValue,
-                ":account_type" => $accountType
+                ":name"     => $name,
+                ":email"    => $email,
+                ":password" => $password
             ]);
 
             $success = "Account created successfully!";
-            $fullName = $email = $school = $major = $gradYear = "";
-            $accountType = "buyer_seller";
+            $name = $email = "";
         } catch (PDOException $e) {
+            // If you set email as UNIQUE, this will catch duplicates
             if ($e->getCode() == 23000) {
-                $errors[] = "Email is already registered.";
+                $errors[] = "This email is already registered.";
             } else {
                 $errors[] = "Error creating account.";
             }
@@ -138,8 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       color: #111827;
       font-size: 0.9rem;
     }
-    .auth-form input,
-    .auth-form select {
+    .auth-form input {
       width: 100%;
       padding: 9px 10px;
       border-radius: 8px;
@@ -214,12 +197,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
       <form method="POST" class="auth-form">
         <div class="form-group">
-          <label for="fullName">Full Name</label>
+          <label for="name">Full Name</label>
           <input
             type="text"
-            id="fullName"
-            name="fullName"
-            value="<?php echo htmlspecialchars($fullName); ?>"
+            id="name"
+            name="name"
+            value="<?php echo htmlspecialchars($name); ?>"
             required
           />
         </div>
@@ -254,48 +237,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               required
             />
           </div>
-        </div>
-
-        <div class="form-group">
-          <label for="school">School (Optional)</label>
-          <input
-            type="text"
-            id="school"
-            name="school"
-            value="<?php echo htmlspecialchars($school); ?>"
-          />
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="major">Major (Optional)</label>
-            <input
-              type="text"
-              id="major"
-              name="major"
-              value="<?php echo htmlspecialchars($major); ?>"
-            />
-          </div>
-          <div class="form-group">
-            <label for="gradYear">Graduation Year (Optional)</label>
-            <select id="gradYear" name="gradYear">
-              <option value="">Select</option>
-              <option value="2025" <?php if ($gradYear === "2025") echo "selected"; ?>>2025</option>
-              <option value="2026" <?php if ($gradYear === "2026") echo "selected"; ?>>2026</option>
-              <option value="2027" <?php if ($gradYear === "2027") echo "selected"; ?>>2027</option>
-              <option value="2028" <?php if ($gradYear === "2028") echo "selected"; ?>>2028</option>
-              <option value="2029" <?php if ($gradYear === "2029") echo "selected"; ?>>2029</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="accountType">Account Type</label>
-          <select id="accountType" name="accountType">
-            <option value="buyer_seller" <?php if ($accountType === "buyer_seller") echo "selected"; ?>>Buyer &amp; Seller</option>
-            <option value="buyer" <?php if ($accountType === "buyer") echo "selected"; ?>>Buyer Only</option>
-            <option value="seller" <?php if ($accountType === "seller") echo "selected"; ?>>Seller Only</option>
-          </select>
         </div>
 
         <div class="form-group checkbox-group">
