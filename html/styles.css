@@ -240,3 +240,25 @@ button.btn {
   color: #ffd100;
 }
 
+/* User login badge */
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  color: #ffd100;
+  font-weight: 600;
+}
+
+.user-icon {
+  background: white;
+  color: #004aad;
+  padding: 5px 7px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+}
+
+.user-name {
+  color: #ffd100;
+}
+

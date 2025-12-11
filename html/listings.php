@@ -7,20 +7,42 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="navbar">
-      <h1 class="logo">🎓 Student Marketplace</h1>
-      <nav>
-        <ul>
-          <li><a href="../index.html" class="active">Home</a></li>
-          <li><a href="listings.php">Browse Listings</a></li>
-          <li><a href="sell.php">Sell Item</a></li>
+<header>
+  <div class="navbar">
+    <h1 class="logo">🎓 Student Marketplace</h1>
+
+    <nav>
+      <ul>
+        <li><a href="../index.php" class="active">Home</a></li>
+        <li><a href="listings.php">Browse Listings</a></li>
+        <li><a href="sell.php">Sell Item</a></li>
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+
+          <!-- USER BADGE (icon + name) -->
+          <li class="user-badge">
+            <span class="user-icon">👤</span>
+            <span class="user-name">
+              <?php echo htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['email']); ?>
+            </span>
+          </li>
+
+          <!-- LOGOUT -->
+          <li><a href="logout.php">Logout</a></li>
+
+        <?php else: ?>
+
+          <!-- SHOWN ONLY WHEN LOGGED OUT -->
           <li><a href="login.php">Login</a></li>
           <li><a href="register.php">Register</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+
+        <?php endif; ?>
+      </ul>
+    </nav>
+
+  </div>
+</header>
+
 
   <section class="hero">
     <h2>All Listings</h2>

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please enter both email and password.";
     } else {
         // Look up the user by email
-        $sql = "SELECT user_id, email, password FROM users WHERE email = ? LIMIT 1";
+$sql = "SELECT user_id, email, full_name, password FROM users WHERE email = ? LIMIT 1";
         $stmt = $conn->prepare($sql);
 
         if (!$stmt) {
@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Successful login — set session variables
                     $_SESSION['user_id'] = $user['user_id'];
                     $_SESSION['email']   = $user['email'];
+$_SESSION['full_name'] = $user['full_name'];
 
                     // Redirect after login (success case)
                     header("Location: listings.php");
@@ -69,20 +70,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <div class="navbar">
-      <h1 class="logo">🎓 Student Marketplace</h1>
-      <nav>
-        <ul>
-          <li><a href="../index.html" class="active">Home</a></li>
-          <li><a href="listings.php">Browse Listings</a></li>
-          <li><a href="sell.php">Sell Item</a></li>
+<header>
+  <div class="navbar">
+    <h1 class="logo">🎓 Student Marketplace</h1>
+
+    <nav>
+      <ul>
+        <li><a href="../index.html" class="active">Home</a></li>
+        <li><a href="listings.php">Browse Listings</a></li>
+        <li><a href="sell.php">Sell Item</a></li>
+
+        <?php if (isset($_SESSION['user_id'])): ?>
+          
+          <!-- USER BADGE (icon + name) -->
+          <li class="user-badge">
+            <span class="user-icon">👤</span>
+            <span class="user-name">
+              <?php echo htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['email']); ?>
+            </span>
+          </li>
+
+          <!-- LOGOUT BUTTON -->
+          <li><a href="logout.php">Logout</a></li>
+
+        <?php else: ?>
+          
+          <!-- SHOW THESE ONLY WHEN LOGGED OUT -->
           <li><a href="login.php">Login</a></li>
           <li><a href="register.php">Register</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+
+        <?php endif; ?>
+      </ul>
+    </nav>
+
+  </div>
+</header>
+
 
   <section class="form-section">
     <h2>Login to Your Account</h2>
